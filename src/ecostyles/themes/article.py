@@ -1,7 +1,6 @@
 """Article chart theme configuration."""
 
 from altair import theme
-
 def get_theme() -> theme.ThemeConfig:
     """Returns a theme suitable for Economics Observatory article charts.
     

@@ -123,11 +123,11 @@ class EcoStyles:
         if theme_name == "cotd":
             @theme.register("cotd", enable=True)
             def custom_theme() -> theme.ThemeConfig:
-                themes.cotd.get_theme(dark_mode)
+                return themes.cotd.get_theme(dark_mode)
         elif theme_name == "article":
             @theme.register("article", enable=True)
             def custom_theme() -> theme.ThemeConfig:
-                themes.article.get_theme()
+                return themes.article.get_theme()
 
 
     def add_colour(self, df: pd.DataFrame, country_column: str, 

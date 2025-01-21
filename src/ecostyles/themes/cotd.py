@@ -10,7 +10,7 @@ def get_theme(dark_mode: bool = False) -> theme.ThemeConfig:
     Returns:
         dict: Theme configuration
     """
-    theme = 'dark' if dark_mode else 'light'
+
     domain = '#676A86'
     subtitle_colour = domain + 'E6'
 

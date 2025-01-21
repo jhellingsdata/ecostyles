@@ -64,26 +64,26 @@ def test_add_shaded_area(styles):
     result = styles.add_shaded_area(start_date, end_date)
     assert isinstance(result, alt.Chart)
 
-# def test_update_y_axis_title(styles):
-#     """Test updating y-axis title.
+def test_update_y_axis_title(styles):
+    """Test updating y-axis title.
     
-#     Notes
-#     ---
-#     - Currently fails due to error with 'to_dict' method.
-#     """
-#     # Create simple chart
-#     df = pd.DataFrame({'x': [1, 2, 3], 'y': [1, 2, 3]})
-#     chart = alt.Chart(df).mark_point().encode(
-#         x='x:Q',
-#         y='y:Q'
-#     )
+    Notes
+    ---
+    - Currently fails due to error with 'to_dict' method.
+    """
+    # Create simple chart
+    df = pd.DataFrame({'x': [1, 2, 3], 'y': [1, 2, 3]})
+    chart = alt.Chart(df).mark_point().encode(
+        x='x:Q',
+        y='y:Q'
+    )
     
-#     new_title = "New Y Title"
-#     updated_chart = styles.update_y_axis_title(chart, new_title)
+    new_title = "New Y Title"
+    updated_chart = styles.update_y_axis_title(chart, new_title)
     
-#     # Convert to dict to check specifications
-#     chart_dict = updated_chart.to_dict()
-#     assert 'encoding' in chart_dict
-#     assert 'y' in chart_dict['encoding']
-#     assert 'axis' in chart_dict['encoding']['y']
-#     assert chart_dict['encoding']['y']['axis']['title'] == new_title
+    # Convert to dict to check specifications
+    chart_dict = updated_chart.to_dict()
+    assert 'encoding' in chart_dict
+    assert 'y' in chart_dict['encoding']
+    assert 'axis' in chart_dict['encoding']['y']
+    assert chart_dict['encoding']['y']['axis']['title'] == new_title
