@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ecostyles"
+version = "0.1.0"
+description = "Custom Altair themes and styling utilities"
+readme = "README.md"
+authors = [
+    {name = "Josh Hellings"}
+]
+maintainers = [
+    {name = "Josh Hellings"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "altair>=5.0.0",
+    "pandas>=1.0.0",
+    "vl-convert-python>=1.0.0",
+    "country-converter>=1.0.0"
+]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/jhellingsdata/ecostyles"
+Repository = "https://github.com/jhellingsdata/ecostyles.git"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=6.0.0",
+    "pytest-cov>=3.0.0"
+]
