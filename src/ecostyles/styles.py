@@ -6,11 +6,15 @@ import pandas as pd
 import country_converter as coco
 from . import themes
 from .utils.file_operations import save_chart, add_source
+from .utils.fonts import setup_fonts
 
 class EcoStyles:
     """Main class for Economics Observatory visualization styling."""
     
     def __init__(self) -> None:
+        # Set up fonts first
+        self._font_dir = setup_fonts()
+
         self.eco_colours = {
             "red": "#e6224b",                      # light red
             "blue-light": "#179fdb",               # bright blue
