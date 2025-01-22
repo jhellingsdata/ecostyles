@@ -40,10 +40,10 @@ def get_theme() -> theme.ThemeConfig:
                 "ordinal": ["#00A767", "#36B7B4", "#179FDB", "#0063AF", "#243B5A"]
             },
             'bar': {
-                'color': "#179fdb"  # blue-light
+                'color': "#179fdb"
             },
             'line': {
-                'color': "#e6224b"  # red
+                'color': "#e6224b"
             },
             'rule': {
                 'color': domain,
@@ -54,7 +54,7 @@ def get_theme() -> theme.ThemeConfig:
             'point': {
                 'filled': True,
                 'size': 80,
-                'color': "#e6224b",  # red
+                'color': "#e6224b",
                 'opacity': 0.95
             },
             'geoshape': {
@@ -65,7 +65,6 @@ def get_theme() -> theme.ThemeConfig:
                 'fill': '#d6d4d4',
                 'opacity': 0.3
             },
-            # Set shared axis options
             'axis': {
                 'labelColor': domain,
                 'labelFontSize': 11,
@@ -82,7 +81,6 @@ def get_theme() -> theme.ThemeConfig:
                 'titleColor': domain,
                 'titleOpacity': 0.8,
                 'tickSize': 4
-
             },
             'axisXDiscrete': {
                 'grid': False,
@@ -98,11 +96,9 @@ def get_theme() -> theme.ThemeConfig:
             'axisXTemporal': {
                 'grid': False,
                 'ticks': True,
-
             },
             'axisXQuantitative': {
                 'grid': True
-                
             },
             'axisYQuantitative': {
                 'gridColor': domain,

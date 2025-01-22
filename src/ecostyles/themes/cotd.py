@@ -39,10 +39,10 @@ def get_theme(dark_mode: bool = False) -> theme.ThemeConfig:
                 "ordinal": ["#00A767", "#36B7B4", "#179FDB", "#0063AF", "#243B5A"]
             },
             'bar': {
-                'color': "#179fdb"  # blue-light
+                'color': "#179fdb"
             },
             'line': {
-                'color': "#e6224b"  # red
+                'color': "#e6224b"
             },
             'rule': {
                 'color': domain,
@@ -50,7 +50,7 @@ def get_theme(dark_mode: bool = False) -> theme.ThemeConfig:
             'point': {
                 'filled': True,
                 'size': 80,
-                'color': "#122b39",  # blue-dark
+                'color': "#122b39",
                 'opacity': 0.95
             },
             'geoshape': {
@@ -123,8 +123,8 @@ def get_theme(dark_mode: bool = False) -> theme.ThemeConfig:
                 "offset": 0
             },
             'legend': {
-                'titleColor': "#122b39",  # text color
-                'labelColor': "#122b39"  # text color
+                'titleColor': "#122b39",
+                'labelColor': "#122b39"
             }
         }
     }
