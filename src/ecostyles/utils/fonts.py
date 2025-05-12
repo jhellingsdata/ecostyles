@@ -1,10 +1,21 @@
 """Font utilities for registering and managing custom fonts."""
 
-import os
-import importlib.resources
+from pathlib import Path
+from tempfile import mkdtemp
 import shutil
-import tempfile
+import sys
 import vl_convert as vlc
+
+# ---------------------------------------------------------------------------
+# importlib.resources – stdlib ≥ 3.10 already has the namespace-package fix;
+# for 3.9 we fall back to the back-port.
+# ---------------------------------------------------------------------------
+if sys.version_info < (3, 10):
+    import importlib_resources as resources          # back-port ≥ 6.4 handles NS pkgs
+else:
+    from importlib import resources                  # stdlib
+
+_FONT_EXTS = {".ttf", ".otf"}
 
 def setup_fonts():
     """
@@ -19,19 +30,24 @@ def setup_fonts():
         str: Path to the temporary font directory
     """
     # Create a temporary directory for fonts
-    temp_font_dir = os.path.join(tempfile.gettempdir(), 'ecostyles_fonts')
-    os.makedirs(temp_font_dir, exist_ok=True)
+    tmp_dir = Path(mkdtemp(prefix="ecostyles_fonts_"))
+
+
+    # Traversable pointing at …/data/fonts/circular-std
+    circular_std_dir = (
+        resources.files("ecostyles.data")
+        .joinpath("fonts")
+        .joinpath("circular-std")
+    )
+
+    # as_file() guarantees a real on-disk path even if we're inside a wheel
+    with resources.as_file(circular_std_dir) as fs_path:
+        # copy *all* font files in that subtree
+        for fp in fs_path.rglob("*"):
+            if fp.suffix.lower() in _FONT_EXTS:
+                shutil.copy2(fp, tmp_dir / fp.name)
+
+    # Tell vl-convert where those fonts live
+    vlc.register_font_directory(str(tmp_dir))
     
-    # Get the package's font directory
-    with importlib.resources.path('ecostyles.data.fonts', 'circular-std') as font_path:
-        # Copy all font files to the temporary directory
-        for font_file in os.listdir(font_path):
-            src = os.path.join(font_path, font_file)
-            dst = os.path.join(temp_font_dir, font_file)
-            if not os.path.exists(dst):  # Only copy if doesn't exist
-                shutil.copy2(src, dst)
-    
-    # Register the font directory with vl-convert
-    vlc.register_font_directory(temp_font_dir)
-    
-    return temp_font_dir
+    return tmp_dir
