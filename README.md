@@ -19,7 +19,7 @@ from ecostyles import EcoStyles
 styles = EcoStyles()
 
 # Register and enable a theme
-styles.register_and_enable_theme(theme_name="cotd")  # or "article"
+styles.register_and_enable_theme(theme_name="article")  # or "cotd", "newsletter"
 
 # Create your Altair chart
 import altair as alt

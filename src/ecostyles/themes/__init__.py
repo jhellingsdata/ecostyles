@@ -3,4 +3,4 @@
 from . import cotd
 from . import article
 
-__all__ = ['cotd', 'article']
+__all__ = ['cotd', 'article', 'newsletter']

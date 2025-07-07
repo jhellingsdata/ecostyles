@@ -9,7 +9,7 @@ from .utils.file_operations import save_chart, add_source
 from .utils.fonts import setup_fonts
 
 class EcoStyles:
-    """Main class for Economics Observatory visualization styling."""
+    """Main class for Economics Observatory visualisation styling."""
     
     def __init__(self) -> None:
         # Set up fonts first
@@ -105,15 +105,15 @@ class EcoStyles:
             return self.national_colours.get(country_code)
         return self.national_colours
 
-    def register_and_enable_theme(self, theme_name: str="cotd", dark_mode: bool=False):
+    def register_and_enable_theme(self, theme_name: str="article", dark_mode: bool=False):
         """Register and enable a custom theme.
         
         Args:
             theme_name: One of 'cotd', 'article', or 'growth_diagnostics'
             dark_mode: Whether to use dark mode theme
         """
-        if theme_name not in ['cotd', 'article', 'growth']:
-            raise ValueError("theme_name must be 'cotd', 'article', or 'growth'")
+        if theme_name not in ['cotd', 'article', 'newsletter']:
+            raise ValueError("theme_name must be 'cotd', 'article', or 'newsletter'")
         
         # def theme_function():
         #     if theme_name == "cotd":
@@ -132,6 +132,10 @@ class EcoStyles:
             @theme.register("article", enable=True)
             def custom_theme() -> theme.ThemeConfig:
                 return themes.article.get_theme()
+        elif theme_name == "newsletter":
+            @theme.register("newsletter", enable=True)
+            def custom_theme() -> theme.ThemeConfig:
+                return themes.newsletter.get_theme()
 
 
     def add_colour(self, df: pd.DataFrame, country_column: str, 
