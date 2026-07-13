@@ -68,14 +68,21 @@ Goal: real coverage of utilities + a visual theme-design harness.
   area, heatmap, geoshape), `tests/test_theme_rendering.py` (smoke-renders every theme × chart to
   PNG as a regression guard, incl. cotd dark), and `scripts/render_themes.py` (one command →
   labelled contact sheet per theme in `renders/`, git-ignored) for visual review.
-- [x] **`noxfile.py`** now uses the **uv** backend across Python 3.9–3.13 (nox added to the `dev` extra).
+- [x] **`noxfile.py`** now uses the **uv** backend across Python 3.10–3.14 (nox added to the `dev` extra).
 - [ ] *(follow-up)* Consider committing reference contact sheets for visual diffing once themes settle.
 
-## Phase 4 — CI/CD & release automation
+## Phase 4 — CI/CD & release automation  **✅ DONE (needs one-time PyPI/GitHub setup — see RELEASING.md)**
 
-- [ ] **CI workflow:** on push/PR → `uv` install + pytest matrix (3.9–3.13).
-- [ ] **Release workflow:** on tag `v*` → build + publish to PyPI via **Trusted Publishing** (OIDC).
-- [ ] Document the release process (tag → auto-publish) in README/CONTRIBUTING.
+- [x] **CI workflow** (`.github/workflows/ci.yml`): PR + push-to-main → `uv` install + pytest
+  matrix on Python 3.10–3.14, with run-cancellation concurrency.
+- [x] **Release workflow** (`.github/workflows/release.yml`): on tag `v*` → `uv build` → publish
+  to PyPI via **Trusted Publishing** (OIDC, no tokens), gated behind a `pypi` environment.
+- [x] **`bump-my-version`** configured in `pyproject.toml` (single-source version bump → commit →
+  `v{version}` tag). Dry-run verified.
+- [x] **`RELEASING.md`** — full guide incl. the one-time PyPI pending-publisher + GitHub
+  environment setup you must do before the first release.
+- **Correction landed here:** dropped Python 3.9 (Altair 6.2 requires ≥3.10; 3.9 is EOL) and
+  added 3.14 (verified: full suite passes on 3.14.5). `requires-python = ">=3.10"`.
 
 ## Phase 5 — New functionality
 

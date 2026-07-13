@@ -2,18 +2,9 @@
 
 from pathlib import Path
 from tempfile import mkdtemp
+from importlib import resources    # stdlib (Python >= 3.10 handles namespace packages)
 import shutil
-import sys
 import vl_convert as vlc
-
-# ---------------------------------------------------------------------------
-# importlib.resources – stdlib ≥ 3.10 already has the namespace-package fix;
-# for 3.9 we fall back to the back-port.
-# ---------------------------------------------------------------------------
-if sys.version_info < (3, 10):
-    import importlib_resources as resources          # back-port ≥ 6.4 handles NS pkgs
-else:
-    from importlib import resources                  # stdlib
 
 _FONT_EXTS = {".ttf", ".otf"}
 

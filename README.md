@@ -40,7 +40,7 @@ styles.save(chart, "path/to/save", "chart_name")       # or styles.save(chart, n
 
 ## Requirements
 
-- Python >= 3.9
+- Python >= 3.10
 - altair >= 6.2.0
 - pandas >= 1.1.3
 - vl-convert-python >= 1.7.0
