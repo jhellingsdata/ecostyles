@@ -1,9 +1,9 @@
-"""Article chart theme configuration."""
+"""Newsletter chart theme configuration."""
 
 from altair import theme
 def get_theme() -> theme.ThemeConfig:
-    """Returns a theme suitable for Economics Observatory article charts.
-    
+    """Returns a theme suitable for Economics Observatory newsletter charts.
+
     Returns:
         dict: Theme configuration
     """

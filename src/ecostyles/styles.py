@@ -109,8 +109,8 @@ class EcoStyles:
         """Register and enable a custom theme.
         
         Args:
-            theme_name: One of 'cotd', 'article', or 'growth_diagnostics'
-            dark_mode: Whether to use dark mode theme
+            theme_name: One of 'cotd', 'article', or 'newsletter'
+            dark_mode: Whether to use dark mode theme (currently only 'cotd' honours this)
         """
         if theme_name not in ['cotd', 'article', 'newsletter']:
             raise ValueError("theme_name must be 'cotd', 'article', or 'newsletter'")

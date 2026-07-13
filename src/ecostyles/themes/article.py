@@ -49,7 +49,7 @@ def get_theme() -> theme.ThemeConfig:
                 'color': domain,
             },
             'area': {
-                'opacity': 0.3
+                'opacity': 0.8
             },
             'point': {
                 'filled': True,
