@@ -1,0 +1,319 @@
+{
+  "config": {
+    "font": "Circular Std",
+    "background": "#f4f4f4",
+    "text": {
+      "color": "#676A86",
+      "align": "left",
+      "baseline": "middle",
+      "dx": 7,
+      "dy": 0,
+      "fontSize": 11
+    },
+    "view": {
+      "stroke": null,
+      "continuousWidth": 400,
+      "continuousHeight": 300,
+      "discreteWidth": 400,
+      "discreteHeight": 300
+    },
+    "range": {
+      "category": [
+        "#36B7B4",
+        "#E6224B",
+        "#F4C245",
+        "#0063AF",
+        "#00A767",
+        "#179FDB",
+        "#EB5C2E"
+      ],
+      "diverging": ["#E6224B", "#E54753", "#C9C9C9", "#179FDB", "#122B39"],
+      "heatmap": ["#C9C9C9", "#179FDB", "#0063AF", "#122B39"],
+      "ordinal": ["#00A767", "#36B7B4", "#179FDB", "#0063AF", "#243B5A"]
+    },
+    "bar": {"color": "#179fdb"},
+    "line": {"color": "#e6224b", "strokeWidth": 3},
+    "rule": {"color": "#676A86"},
+    "area": {"opacity": 0.3},
+    "point": {"filled": true, "size": 80, "color": "#e6224b", "opacity": 0.95},
+    "geoshape": {"stroke": "white", "strokeWidth": 0.3},
+    "rect": {"fill": "#d6d4d4", "opacity": 0.3},
+    "axis": {
+      "labelColor": "#676A86",
+      "labelFontSize": 12,
+      "labelFont": "Circular Std",
+      "labelOpacity": 0.9,
+      "tickColor": "#676A86",
+      "tickOpacity": 0.5,
+      "domainColor": "#676A86",
+      "domainOpacity": 0.5,
+      "gridColor": "#676A86",
+      "gridDash": [2, 2],
+      "gridOpacity": 0.5,
+      "title": null,
+      "titleColor": "#676A86",
+      "titleOpacity": 0.8,
+      "tickSize": 4
+    },
+    "axisXDiscrete": {
+      "grid": false,
+      "labelAngle": 0,
+      "tickCount": 10,
+      "tickOpacity": 0.5,
+      "title": null
+    },
+    "axisYDiscrete": {"ticks": false, "labelPadding": 5},
+    "axisXTemporal": {"grid": false, "ticks": true},
+    "axisXQuantitative": {"grid": true},
+    "axisYQuantitative": {
+      "gridColor": "#676A86",
+      "gridDash": [1, 5],
+      "gridOpacity": 0.5,
+      "ticks": false,
+      "labelPadding": 5,
+      "tickCount": 8,
+      "titleAngle": 0,
+      "titleAlign": "left",
+      "titleBaseline": "bottom",
+      "titleX": 0,
+      "titleY": -5
+    },
+    "title": {
+      "color": "#676A86",
+      "subtitleColor": "#676A86E6",
+      "font": "Circular Std",
+      "subtitleFont": "Circular Std",
+      "anchor": "start",
+      "fontSize": 14,
+      "subtitleFontSize": 12,
+      "subtitlePadding": 4,
+      "offset": 0,
+      "frame": "group"
+    },
+    "legend": {
+      "titleColor": "#122b39",
+      "title": null,
+      "labelColor": "#122b39",
+      "labelFontSize": 11
+    }
+  },
+  "layer": [
+
+    {
+      "data": {"name": "data-436db0df4f52165665039e559d6440fd"},
+
+      "encoding": {
+        "x": {
+          "axis": {
+            "title": "Pre-tax income",
+            "titleFontSize": 12,
+            "labelExpr": "'£' + datum.value / 1000 + 'k'",
+            "labelFontSize": 13,
+            "tickCount": 6,
+            "grid": false
+          },
+          "field": "bin",
+          "scale": {"domain": [75000, 125000]},
+          "type": "quantitative"
+        },
+        "y": {
+          "axis": {
+            "title": "",
+            "titleFontSize": 11,
+            "grid": true,
+            "labelExpr": "datum.value / 1000 + 'k'",
+            "labelFontSize": 13
+          },
+          "field": "weighted_count",
+          "scale": {"domain": [0, 70000]},
+          "type": "quantitative"
+        }
+      },
+      "layer": [
+        {
+          "mark": {"type": "line", "interpolate": "cardinal"}
+        },
+        {
+          "data": {"values": [{"start":82500, "end": 99500, "y": 52000, "label": "Taxpayers bunch just below the £100k |threshold, with as many people |earning £99.5k as £82.5k"}]},
+          
+          "encoding": {
+            "x": {"field": "start"},
+            "x2": {"field": "end"},
+            "y": {"field": "y"}
+          },
+          "layer": [
+            {"mark": {"type": "line", "strokeDash": [2,2], "color": "#e6224dc8", "strokeWidth": 2}},
+            {
+              "mark": {"type": "text", "lineBreak": "|", "align": "left", "lineHeight":11.5, "dx": 11, "dy": -18, "baseline": "bottom"},
+              "encoding": {
+                "x": {"field": "end"},
+                "text": {"field": "label"}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "data": {"name": "data-436db0df4f52165665039e559d6440fd"},
+      "mark": {"type": "point"},
+      "encoding": {
+        "opacity": {
+          "condition": {"param": "param_6", "value": 1, "empty": false},
+          "value": 0
+        },
+        "x": {
+          "axis": {
+            "title": "Pre-tax income",
+            "titleFontSize": 12,
+            "labelExpr": "'£' + datum.value / 1000 + 'k'",
+            "labelFontSize": 13,
+            "tickCount": 6,
+            "grid": false
+          },
+          "field": "bin",
+          "scale": {"domain": [75000, 125000]},
+          "type": "quantitative"
+        },
+        "y": {
+          "axis": {
+            "title": "Number of UK taxpayers by annual income",
+            "titleFontSize": 11,
+            "grid": true,
+            "labelExpr": "datum.value / 1000 + 'k'",
+            "labelFontSize": 13
+          },
+          "field": "weighted_count",
+          "scale": {"domain": [0, 70000]},
+          "type": "quantitative"
+        }
+      }
+    },
+    {
+      "data": {"name": "data-436db0df4f52165665039e559d6440fd"},
+      "mark": {"type": "rule", "color": "gray"},
+      "encoding": {
+        "opacity": {
+          "condition": {"param": "param_6", "value": 0.3, "empty": false},
+          "value": 0
+        },
+        "tooltip": [
+          {
+            "field": "weighted_count",
+            "format": ",.0f",
+            "title": "Taxpayers",
+            "type": "quantitative"
+          },
+          {
+            "field": "bin",
+            "format": ",.0f",
+            "title": "Income (£)",
+            "type": "quantitative"
+          }
+        ],
+        "x": {"field": "bin", "type": "quantitative"}
+      },
+      "name": "view_6"
+    },
+
+    {
+      "data": {"name": "data-be7f0442aa1a6790dd415e456d2160a4"},
+      "mark": {
+        "type": "rule",
+        "color": "dimgrey",
+        "strokeDash": [5, 5],
+        "strokeWidth": 1.5
+      },
+      "encoding": {"x": {"field": "x", "type": "quantitative"}}
+    },
+    {
+      "data": {"values": [{"label": "Source: CenTax analysis of HMRC |Survey of Personal Incomes, 22/23"}]},
+      "mark": {"type": "text", "opacity": 0.6,"fontStyle": "italic","dy": 30, "dx": 0, "lineBreak": "|", "lineHeight": 10},
+      "encoding": {
+        "y": {"value": "height"},
+        "x": {"value": 0},
+        "text": {"field": "label"}
+      }
+    },
+    {
+      "data": {"values": [{"img": "https://raw.githubusercontent.com/EconomicsObservatory/ECOvisualisations/main/guidelines/logos/eco-icon-dark_cropped.png"}]},
+      "mark": {"type":"image", "height": 23, "width":46, "align": "right", "baseline": "bottom", "opacity": 0.6, "yOffset": 45},
+      "encoding": {
+        "x": {"value": "width"},
+        "y": {"value": "height"},
+        "url": {"field": "img", "type": "nominal"}
+      }
+    }
+  ],
+  "height": 300,
+  "params": [
+    {
+      "name": "param_6",
+      "select": {
+        "type": "point",
+        "fields": ["bin"],
+        "nearest": true,
+        "on": "pointerover"
+      },
+      "views": ["view_6"]
+    }
+  ],
+  "title": {"text": "More people earn just under £100,000 than around £83,000", "anchor": "start", "fontSize": 16},
+  "width": 500,
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json",
+  "datasets": {
+    "data-436db0df4f52165665039e559d6440fd": [
+      {"bin": 75500, "weighted_count": 67465.33808423737},
+      {"bin": 76500, "weighted_count": 65283.017742118165},
+      {"bin": 77500, "weighted_count": 64524.09655993881},
+      {"bin": 78500, "weighted_count": 58882.344542118255},
+      {"bin": 79500, "weighted_count": 57416.01256757048},
+      {"bin": 80500, "weighted_count": 53457.37077196905},
+      {"bin": 81500, "weighted_count": 53671.51718423723},
+      {"bin": 82500, "weighted_count": 52713.53218423726},
+      {"bin": 83500, "weighted_count": 48000.1033719692},
+      {"bin": 84500, "weighted_count": 50483.88039999937},
+      {"bin": 85500, "weighted_count": 47024.6243819692},
+      {"bin": 86500, "weighted_count": 46983.411184237375},
+      {"bin": 87500, "weighted_count": 42466.66237196933},
+      {"bin": 88500, "weighted_count": 43586.98487196938},
+      {"bin": 89500, "weighted_count": 43330.77444211864},
+      {"bin": 90500, "weighted_count": 40918.5230719694},
+      {"bin": 91500, "weighted_count": 38199.144371969465},
+      {"bin": 92500, "weighted_count": 38925.278670149026},
+      {"bin": 93500, "weighted_count": 36278.12237196914},
+      {"bin": 94500, "weighted_count": 36585.48319999943},
+      {"bin": 95500, "weighted_count": 33001.285171968804},
+      {"bin": 96500, "weighted_count": 33197.54427196871},
+      {"bin": 97500, "weighted_count": 32029.37769999896},
+      {"bin": 98500, "weighted_count": 36916.65274211816},
+      {"bin": 99500, "weighted_count": 52397.697299999265},
+      {"bin": 100500, "weighted_count": 32411.766899998736},
+      {"bin": 101500, "weighted_count": 28387.45109999903},
+      {"bin": 102500, "weighted_count": 28318.530171968767},
+      {"bin": 103500, "weighted_count": 26148.847499999196},
+      {"bin": 104500, "weighted_count": 24127.34409999929},
+      {"bin": 105500, "weighted_count": 24341.147683332627},
+      {"bin": 106500, "weighted_count": 22558.015899999416},
+      {"bin": 107500, "weighted_count": 21035.505299999502},
+      {"bin": 108500, "weighted_count": 20570.9167719692},
+      {"bin": 109500, "weighted_count": 20886.897999999517},
+      {"bin": 110500, "weighted_count": 19614.700799999555},
+      {"bin": 111500, "weighted_count": 18383.005699999605},
+      {"bin": 112500, "weighted_count": 18309.301999999636},
+      {"bin": 113500, "weighted_count": 18069.54828333301},
+      {"bin": 114500, "weighted_count": 17846.27569999964},
+      {"bin": 115500, "weighted_count": 17067.978271969383},
+      {"bin": 116500, "weighted_count": 16690.546199999724},
+      {"bin": 117500, "weighted_count": 16552.24289999971},
+      {"bin": 118500, "weighted_count": 15895.502083333087},
+      {"bin": 119500, "weighted_count": 15114.142099999768},
+      {"bin": 120500, "weighted_count": 15700.883999999744},
+      {"bin": 121500, "weighted_count": 14475.631599999784},
+      {"bin": 122500, "weighted_count": 13839.786199999797},
+      {"bin": 123500, "weighted_count": 14252.078499999783},
+      {"bin": 124500, "weighted_count": 13186.151099999815}
+    ],
+    "data-be7f0442aa1a6790dd415e456d2160a4": [{"x": 100000}]
+  }
+}
