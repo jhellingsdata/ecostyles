@@ -26,8 +26,8 @@ import altair as alt
 chart = alt.Chart(data).mark_line().encode(...)
 
 # Use helper methods
-styles.add_source(chart, "Source: ONS")
-styles.save(chart, "path/to/save", "chart_name")
+chart_with_source = styles.add_source(chart, "ONS")   # returns a new chart; multi-line supported
+styles.save(chart, "path/to/save", "chart_name")       # or styles.save(chart, name="chart_name") to save to cwd
 ```
 
 ## Features
@@ -40,10 +40,10 @@ styles.save(chart, "path/to/save", "chart_name")
 
 ## Requirements
 
-- Python >= 3.8
-- altair >= 5.0.0
-- pandas >= 1.0.0
-- vl-convert-python >= 1.0.0
+- Python >= 3.9
+- altair >= 6.2.0
+- pandas >= 1.1.3
+- vl-convert-python >= 1.7.0
 - country-converter >= 1.0.0
 
 ## License
