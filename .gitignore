@@ -4,6 +4,9 @@ venv/
 env/
 .env/
 
+# uv lockfile (CI resolves fresh via `uv pip install`, so we don't track the lock)
+uv.lock
+
 # Python cache files
 __pycache__/
 *.py[cod]
