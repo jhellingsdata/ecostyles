@@ -36,7 +36,9 @@ def _load_bundled() -> tuple[dict[tuple[str, int], int], int]:
     global _BUNDLED, _BUNDLED_MAX_YEAR
     if _BUNDLED is None:
         data: dict[tuple[str, int], int] = {}
-        csv_file = resources.files("ecostyles.data").joinpath("population", "population.csv")
+        # Chained single-arg joinpath: multi-arg joinpath on a namespace-package
+        # MultiplexedPath is only supported from Python 3.12.
+        csv_file = resources.files("ecostyles.data").joinpath("population").joinpath("population.csv")
         with resources.as_file(csv_file) as path, open(path, newline="") as f:
             reader = csv.reader(f)
             next(reader, None)  # skip header

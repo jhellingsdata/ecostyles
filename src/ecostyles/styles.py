@@ -280,7 +280,9 @@ class EcoStyles:
         if key not in ("uk", "us"):
             raise ValueError("region must be 'uk' or 'us'")
 
-        data_file = resources.files("ecostyles.data").joinpath("recessions", f"recessions_{key}.json")
+        # Chained single-arg joinpath: multi-arg joinpath on a namespace-package
+        # MultiplexedPath is only supported from Python 3.12.
+        data_file = resources.files("ecostyles.data").joinpath("recessions").joinpath(f"recessions_{key}.json")
         with resources.as_file(data_file) as path, open(path) as f:
             records = json.load(f)
 
