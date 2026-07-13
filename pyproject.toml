@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ecostyles"
-version = "0.1.2"
+version = "0.2.0"
 description = "Custom Altair themes and styling utilities"
 readme = "README.md"
 authors = [
@@ -59,7 +59,7 @@ ecostyles = ["data/**/*.otf", "data/**/*.ttf", "data/**/*.json", "data/**/*.csv"
 # This edits the version below, commits, and creates a `v{new}` tag; pushing the
 # tag triggers the Release workflow. See RELEASING.md.
 [tool.bumpversion]
-current_version = "0.1.2"
+current_version = "0.2.0"
 allow_dirty = false
 commit = true
 tag = true
