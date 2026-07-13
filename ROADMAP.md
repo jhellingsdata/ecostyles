@@ -86,9 +86,14 @@ Goal: real coverage of utilities + a visual theme-design harness.
 
 ## Phase 5 — New functionality
 
-- [ ] **`add_population`** helper: match on country code, fetch population for a given year from
-  the **World Bank** API (indicator `SP.POP.TOTL`; UN as fallback). Cache responses. *Acceptance:*
-  returns a df with a `population` column; handles missing codes/years gracefully.
+- [x] **`add_population`** helper (`utils/population.py`). Fetches from the **World Bank** API
+  (`SP.POP.TOTL`) — chosen over the UN Data Portal because it needs **no auth token** (the UN
+  `/data/` endpoint returns 401 without one), takes ISO3 directly, and is UN-WPP-sourced.
+  Accepts `year` (single) or `year_column` (panel); converts names/ISO2→ISO3 via
+  `country_converter`; unresolved country/year → NaN + warning; results cached (`lru_cache`).
+  Note: requests are made per `(country, year)` because some networks block the `;`/`:`
+  batched-URL syntax — the batched form is correct (KB-confirmed) and can be restored later.
+  12 offline (mocked) tests; live happy-path verified.
 - [ ] **`add_shaded_area` upgrade:** accept the packaged recessions datasets by name (uk/us) and
   respect theme `rect` config rather than hardcoded opacity.
 - [ ] **Rewrite `add_colour`** into a correct, documented country→colour lookup (feeds Phase 3 tests).

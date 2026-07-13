@@ -6,6 +6,7 @@ import pandas as pd
 import country_converter as coco
 from . import themes
 from .utils.file_operations import save_chart, add_source
+from .utils.population import add_population
 from .utils.fonts import setup_fonts
 
 class EcoStyles:
@@ -231,3 +232,7 @@ class EcoStyles:
     def add_source(self, *args, **kwargs):
         """Add source attribution to chart. See utils.file_operations.add_source for details."""
         return add_source(*args, **kwargs)
+
+    def add_population(self, *args, **kwargs):
+        """Add a population column via the World Bank API. See utils.population.add_population."""
+        return add_population(*args, **kwargs)
