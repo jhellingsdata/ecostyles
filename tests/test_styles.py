@@ -17,7 +17,7 @@ def test_initialization(styles):
     assert isinstance(styles.country_groups, dict)
     
     # Check specific colors exist
-    assert styles.eco_colours["red"] == "#e6224b"
+    assert styles.eco_colours["pink"] == "#e6224b"
     assert styles.eco_colours["blue-light"] == "#179fdb"
 
 def test_theme_registration(styles):
@@ -30,31 +30,35 @@ def test_theme_registration(styles):
     with pytest.raises(ValueError):
         styles.register_and_enable_theme("invalid_theme")
 
-def test_add_colour(styles):
-    """Test adding colors to a dataframe."""
-    # Create sample dataframe
-    df = pd.DataFrame({
-        'country': ['GBR', 'FRA', 'OECD'],
-        'value': [1, 2, 3]
-    })
-    colour_override = {
-        'GBR': 'red',
-        'GBR-bar': 'red',
-        'FRA': 'blue',
-        'OECD': 'grey'
-    }
-    
-    # Add colors
-    result = styles.add_colour(df, 'country', colour_override)
-    
-    # Check new columns exist
-    assert 'color-bar' in result.columns
-    assert 'color-line' in result.columns
-    
-    # Check specific color assignments
-    gbr_row = result[result['country'] == 'GBR']
-    assert not gbr_row['color-bar'].isna().any()
-    assert not gbr_row['color-line'].isna().any()
+def test_add_colour_explicit_map(styles):
+    """Explicit colour_map pins countries (matched via name->ISO3); rest get default."""
+    df = pd.DataFrame({'country': ['GBR', 'FRA', 'OECD'], 'value': [1, 2, 3]})
+    # Key given as a name to prove normalisation to ISO3.
+    result = styles.add_colour(df, 'country', {'United Kingdom': '#e6224b'}, default='#cccccc')
+
+    assert 'colour' in result.columns
+    assert result.loc[result.country == 'GBR', 'colour'].iloc[0] == '#e6224b'
+    assert result.loc[result.country == 'FRA', 'colour'].iloc[0] == '#cccccc'
+    assert 'colour' not in df.columns  # input not mutated
+
+
+def test_add_colour_auto_palette(styles):
+    """Without a map, distinct countries get consecutive palette colours, stable per country."""
+    df = pd.DataFrame({'country': ['GBR', 'FRA', 'GBR', 'DEU']})
+    result = styles.add_colour(df, 'country')
+
+    assert result['colour'].iloc[0] == styles.category_palette[0]   # GBR (1st distinct)
+    assert result['colour'].iloc[1] == styles.category_palette[1]   # FRA (2nd)
+    assert result['colour'].iloc[2] == styles.category_palette[0]   # GBR again -> same
+    assert result['colour'].iloc[3] == styles.category_palette[2]   # DEU (3rd)
+
+
+def test_add_colour_country_group_matches_literal(styles):
+    """Country groups that don't convert to ISO3 match on their literal label."""
+    df = pd.DataFrame({'country': ['OECD', 'GBR']})
+    result = styles.add_colour(df, 'country', {'OECD': '#123456'}, default='#000000')
+    assert result.loc[result.country == 'OECD', 'colour'].iloc[0] == '#123456'
+    assert result.loc[result.country == 'GBR', 'colour'].iloc[0] == '#000000'
 
 def test_add_shaded_area(styles):
     """Test creating shaded area chart element."""

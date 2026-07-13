@@ -21,7 +21,7 @@ class EcoStyles:
         self._font_dir = setup_fonts()
 
         self.eco_colours = {
-            "red": "#e6224b",                      # ECO pink/red (categorical #2)
+            "pink": "#e6224b",                     # ECO pink (categorical #2)
             "blue-light": "#179fdb",               # ECO light-blue
             "blue-dark": "#122b39",                # ECO dark-blue / background
             "yellow": "#f4c245",                   # ECO yellow
@@ -33,6 +33,12 @@ class EcoStyles:
             "dot": "#f4134d",                      # ECO dot (primary brand mark)
             "grey": "#676a86",                     # ECO grey (axes, labels, de-emphasis)
         }
+
+        # ECO categorical palette in order of preference (used by add_colour and previews).
+        self.category_palette = [
+            "#36B7B4", "#E6224B", "#F4C245", "#0063AF", "#00A767",
+            "#179FDB", "#EB5C2E", "#5C267B", "#122B39",
+        ]
 
         self.organisation_colours = {
             'OBR': 'rgb(69,101,133)',             # OBR blue
@@ -140,6 +146,7 @@ class EcoStyles:
         """
         groups = {
             "eco": (self.eco_colours, "ECO colours"),
+            "category": (self.category_palette, "ECO categorical palette"),
             "national": (self.national_colours, "UK nation flag colours"),
             "national_eco": (self.national_eco_colours, "UK nation ECO colours"),
         }
@@ -201,42 +208,62 @@ class EcoStyles:
                 return themes.newsletter.get_theme()
 
 
-    def add_colour(self, df: pd.DataFrame, country_column: str, 
-                  colour_override: dict=None) -> pd.DataFrame:
-        """Add colour columns to a dataframe based on country codes.
-        
+    def add_colour(self, df: pd.DataFrame, country_column: str, colour_map: dict = None, *,
+                   default: str = None, palette=None, colour_column: str = "colour") -> pd.DataFrame:
+        """Add a colour column mapping each country to a standard colour.
+
+        Country identifiers (names, ISO2 or ISO3) are converted to ISO3 before matching, so
+        the frame and the ``colour_map`` can use different formats. Country groups such as
+        ``OECD``/``EU27`` (which don't convert) match on their literal label. The input frame
+        is not mutated.
+
+        Two ways to use it:
+
+        - **Explicit** — pass ``colour_map={country: colour}`` to pin specific countries;
+          the rest get ``default``. Good for highlighting, e.g.
+          ``add_colour(df, "country", {"GBR": styles.eco_colours["pink"]})`` colours the UK
+          and leaves everyone grey.
+        - **Automatic** — with no ``colour_map``, each distinct country gets the next colour
+          from ``palette`` (the ECO categorical palette by default) in order of first
+          appearance, so every country has a consistent colour within the frame.
+
         Args:
-            df: Input dataframe
-            country_column: Name of column containing country codes/names
-            colour_override: Optional dictionary to override default colors
-        
+            df: Input dataframe (copied, not mutated).
+            country_column: Column of country names / codes.
+            colour_map: Optional ``{country: colour}`` overrides.
+            default: Colour for unmapped countries (default: ECO grey).
+            palette: Ordered colours for automatic assignment (default: ECO categorical).
+            colour_column: Name of the colour column to add (default ``"colour"``).
+
         Returns:
-            DataFrame with added color columns
-
-        Note: INCOMPLETE
+            A copy of ``df`` with ``colour_column`` added. Use it in a chart via, e.g.,
+            ``alt.Color(f"{colour_column}:N", scale=None)``.
         """
-        palette = self.palette.copy()
+        df = df.copy()
+        default = default or self.eco_colours["grey"]
+        palette = list(palette) if palette is not None else list(self.category_palette)
 
-        if colour_override:
-            palette.update(colour_override)
+        originals = df[country_column].astype(str).tolist()
+        converted = coco.convert(originals, to="ISO3", not_found=None)
+        if isinstance(converted, str):  # coco returns a bare string for a single input
+            converted = [converted]
+        # Effective key per row: ISO3 when resolvable, else the original label (groups).
+        keys = [iso or orig for iso, orig in zip(converted, originals)]
 
-        first_country = df[country_column].iloc[0]
-        if len(first_country) != 3:
-            df['ISO3'] = coco.convert(df[country_column].tolist(), to='ISO3')
-            country_col_to_use = 'ISO3'
+        if colour_map:
+            normalised = {}
+            for label, colour in colour_map.items():
+                iso = coco.convert(str(label), to="ISO3", not_found=None)
+                normalised[iso or str(label)] = colour
+            colours = [normalised.get(k, default) for k in keys]
         else:
-            country_col_to_use = country_column
+            assigned = {}
+            for k in keys:
+                if k not in assigned:
+                    assigned[k] = palette[len(assigned) % len(palette)]
+            colours = [assigned[k] for k in keys]
 
-        df['color-bar'] = df[country_col_to_use].apply(
-            lambda x: palette.get('GBR-bar') if x == 'GBR' else
-            palette.get('light').get('country-group') if x in self.country_groups else
-            palette.get('light').get('non-uk')
-        )
-
-        df['color-line'] = df[country_col_to_use].apply(
-            lambda x: palette.get(x, palette.get('domain'))
-        )
-
+        df[colour_column] = colours
         return df
 
     def get_recessions(self, region: str = "uk") -> pd.DataFrame:

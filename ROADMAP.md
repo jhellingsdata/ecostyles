@@ -103,9 +103,14 @@ Goal: real coverage of utilities + a visual theme-design harness.
   `preview_theme_colours(theme)` renders a theme's category/diverging/heatmap/ordinal ranges
   (`utils/palette.py::swatches`). Added ECO **default nation colours** (`national_eco_colours`
   + getter) from the ECO README, and rounded out `eco_colours` (green/mid-blue/purple/dot/grey).
-  Kept flag colours untouched. Open discrepancy to confirm: README lists a 9-colour categorical
-  set (adds ECO purple `#5C267B`) vs our 7-colour theme `range.category` — left theme unchanged.
-- [ ] **Rewrite `add_colour`** into a correct, documented country→colour lookup (feeds Phase 3 tests).
+  Kept flag colours untouched. **Resolved:** extended the theme `range.category` to the full
+  9-colour ECO set (added purple `#5C267B` + dark-blue `#122B39`) across all themes, added a
+  canonical `category_palette`, and renamed `eco_colours["red"]` → `"pink"` (matches ECO naming).
+- [x] **Rewrote `add_colour`** into a correct, non-mutating country→colour lookup. Converts
+  names/ISO2→ISO3 for matching (groups match on literal label). Two modes: explicit
+  `colour_map` (+ `default`) for highlighting, or automatic assignment from the ECO categorical
+  palette (stable per country). Adds a configurable `colour_column` for a manual Altair colour
+  scale. Old broken `color-bar`/`color-line` + `colour_override` API replaced. Verified + tested.
 
 ## Phase 6 — Documentation
 
