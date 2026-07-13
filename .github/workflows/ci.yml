@@ -31,8 +31,9 @@ jobs:
           cache-dependency-glob: "pyproject.toml"
 
       - name: Create venv and install the package with test dependencies
+        # --clear because setup-uv (with python-version) already creates a .venv.
         run: |
-          uv venv
+          uv venv --clear
           uv pip install -e ".[test]"
 
       - name: Run tests
