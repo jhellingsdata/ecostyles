@@ -1,9 +1,25 @@
 """Utility functions for file operations with Altair charts."""
 
 import os
+import re
 import json
 import vl_convert as vlc
 import altair as alt
+
+# Matches an exact-midnight time component of an ISO datetime, e.g. the "T00:00:00"
+# (optionally with fractional seconds and/or a trailing Z) in "2020-01-01T00:00:00".
+_MIDNIGHT_RE = re.compile(r"T00:00:00(?:\.0+)?Z?")
+
+
+def _strip_midnight_timestamps(spec_json: str) -> str:
+    """Drop exact-midnight time components from ISO dates in a serialised spec.
+
+    Pandas datetime columns serialise as e.g. ``"2020-01-01T00:00:00"``, which bloats the
+    JSON with text that carries no information for date-level charts. Where the time is
+    exactly midnight we drop it, leaving ``"2020-01-01"``. Non-midnight times (which do
+    carry information) are left untouched.
+    """
+    return _MIDNIGHT_RE.sub("", spec_json)
 
 
 def modify_dimensions(chart: alt.Chart, width: int, height: int) -> str:
@@ -26,7 +42,15 @@ def modify_dimensions(chart: alt.Chart, width: int, height: int) -> str:
     return json.dumps(chart_dict, indent=2)
 
 
-def save_chart(chart, path="", name=None, width=350, height=280, svg=False, source=None):
+def _spec_for_save(chart, width, height, strip_timestamps) -> str:
+    """Serialise a chart to a minified spec string, optionally stripping midnight times."""
+    spec = json.dumps(json.loads(modify_dimensions(chart, width, height)),
+                      separators=(",", ":"))
+    return _strip_midnight_timestamps(spec) if strip_timestamps else spec
+
+
+def save_chart(chart, path="", name=None, width=350, height=280, svg=False, source=None,
+               strip_timestamps=True):
     """Save an Altair chart as minified JSON and PNG (and optionally SVG).
 
     Args:
@@ -40,6 +64,8 @@ def save_chart(chart, path="", name=None, width=350, height=280, svg=False, sour
         svg: True to also save an SVG file alongside the JSON and PNG
         source: optional source text to add to the bottom of the chart. When given, an
             additional PNG is written with '_source' appended to the name.
+        strip_timestamps: True (default) to drop exact-midnight ``T00:00:00`` time
+            components from inline date data, keeping the JSON compact.
 
     Returns:
         None
@@ -51,34 +77,27 @@ def save_chart(chart, path="", name=None, width=350, height=280, svg=False, sour
     if path:
         os.makedirs(path, exist_ok=True)
 
-    # Check for truthy width/height, add to chart if so. (Lets us avoid forcing
-    # height/width onto charts that shouldn't have them, e.g. faceted charts.)
-    vega_spec = modify_dimensions(chart, width, height)
+    # One minified (and optionally timestamp-stripped) spec, reused for every output.
+    spec = _spec_for_save(chart, width, height, strip_timestamps)
 
-    # Save as JSON (minified to save space)
     json_path = os.path.join(path, f'{name}.json')
     with open(json_path, 'w') as f:
-        json.dump(json.loads(vega_spec), f, separators=(',', ':'))
+        f.write(spec)
 
-    # Convert JSON to PNG using vl2png
     png_path = os.path.join(path, f'{name}.png')
-    png_data = vlc.vegalite_to_png(vl_spec=vega_spec, scale=4)
     with open(png_path, "wb") as f:
-        f.write(png_data)
+        f.write(vlc.vegalite_to_png(vl_spec=spec, scale=4))
 
     if svg:
         svg_path = os.path.join(path, f'{name}.svg')
-        svg_data = vlc.vegalite_to_svg(vl_spec=vega_spec)
         with open(svg_path, "w") as f:
-            f.write(svg_data)
+            f.write(vlc.vegalite_to_svg(vl_spec=spec))
 
     if source:
-        sourced_chart = add_source(chart, source)
-        vega_spec = modify_dimensions(sourced_chart, width, height)
+        sourced_spec = _spec_for_save(add_source(chart, source), width, height, strip_timestamps)
         png_path = os.path.join(path, f'{name}_source.png')
-        png_data = vlc.vegalite_to_png(vl_spec=vega_spec, scale=4)
         with open(png_path, "wb") as f:
-            f.write(png_data)
+            f.write(vlc.vegalite_to_png(vl_spec=sourced_spec, scale=4))
 
 
 def add_source(chart: alt.Chart, source, *, font_size: int = 10,

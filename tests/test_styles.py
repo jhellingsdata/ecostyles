@@ -60,9 +60,53 @@ def test_add_shaded_area(styles):
     """Test creating shaded area chart element."""
     start_date = '2020-01-01'
     end_date = '2020-12-31'
-    
+
     result = styles.add_shaded_area(start_date, end_date)
     assert isinstance(result, alt.Chart)
+
+
+def test_add_shaded_area_periods_and_validation(styles):
+    """Shaded area accepts a periods dataframe and requires both endpoints otherwise."""
+    rec = styles.get_recessions("uk")
+    multi = styles.add_shaded_area(periods=rec)
+    assert isinstance(multi, alt.Chart)
+    with pytest.raises(ValueError):
+        styles.add_shaded_area("2020-01-01")  # missing end_date
+
+
+@pytest.mark.parametrize("region", ["uk", "us"])
+def test_get_recessions(styles, region):
+    rec = styles.get_recessions(region)
+    assert list(rec.columns) == ["start", "end"]
+    assert len(rec) > 0
+    assert str(rec["start"].dtype).startswith("datetime")
+
+
+def test_get_recessions_invalid_region(styles):
+    with pytest.raises(ValueError):
+        styles.get_recessions("fr")
+
+
+def test_national_eco_colours(styles):
+    assert styles.get_national_eco_colours("GB-SCT") == "#0063af"
+    assert styles.get_national_eco_colours("GB-ENG") == "#5c267b"
+    assert isinstance(styles.get_national_eco_colours(), dict)
+
+
+def test_show_colours(styles):
+    # swatches() returns a layered chart, so check against the common Altair base type.
+    assert isinstance(styles.show_colours("eco"), alt.TopLevelMixin)
+    assert isinstance(styles.show_colours("national_eco"), alt.TopLevelMixin)
+    assert isinstance(styles.show_colours({"a": "#000000"}), alt.TopLevelMixin)  # custom mapping
+    with pytest.raises(ValueError):
+        styles.show_colours("does_not_exist")
+
+
+def test_preview_theme_colours(styles):
+    for name in ("article", "cotd", "newsletter"):
+        assert styles.preview_theme_colours(name) is not None
+    with pytest.raises(ValueError):
+        styles.preview_theme_colours("bad_theme")
 
 def test_update_y_axis_title(styles):
     """Test updating y-axis title.

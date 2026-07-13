@@ -93,8 +93,18 @@ Goal: real coverage of utilities + a visual theme-design harness.
   chosen over the UN Data Portal (no auth token; UN-WPP-sourced). Accepts `year` or `year_column`;
   names/ISO2→ISO3 via `country_converter`; unresolved → NaN + warning. Refresh the bundle with
   `scripts/fetch_population.py` (single bulk-CSV download). Verified end-to-end; 15 tests.
-- [ ] **`add_shaded_area` upgrade:** accept the packaged recessions datasets by name (uk/us) and
-  respect theme `rect` config rather than hardcoded opacity.
+- [x] **`add_shaded_area` upgrade** + **`get_recessions(region)`** helper. `add_shaded_area` now
+  takes a single `start_date`/`end_date` **or** a `periods` dataframe (e.g. from `get_recessions`
+  to shade every UK/US recession), and uses the theme's `rect` config unless `color`/`opacity`
+  are overridden. `get_recessions` loads the packaged uk/us data as a start/end datetime frame.
+- [x] **`save_chart` strips midnight timestamps** — drops exact `T00:00:00` from inline date data
+  to keep the JSON compact (`strip_timestamps=False` to opt out); non-midnight times preserved.
+- [x] **Palette viewers + audit.** `show_colours(which)` renders brand-palette swatches;
+  `preview_theme_colours(theme)` renders a theme's category/diverging/heatmap/ordinal ranges
+  (`utils/palette.py::swatches`). Added ECO **default nation colours** (`national_eco_colours`
+  + getter) from the ECO README, and rounded out `eco_colours` (green/mid-blue/purple/dot/grey).
+  Kept flag colours untouched. Open discrepancy to confirm: README lists a 9-colour categorical
+  set (adds ECO purple `#5C267B`) vs our 7-colour theme `range.category` — left theme unchanged.
 - [ ] **Rewrite `add_colour`** into a correct, documented country→colour lookup (feeds Phase 3 tests).
 
 ## Phase 6 — Documentation

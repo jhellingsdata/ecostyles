@@ -6,7 +6,9 @@ import altair as alt
 import pandas as pd
 import pytest
 
-from ecostyles.utils.file_operations import add_source, modify_dimensions, save_chart
+from ecostyles.utils.file_operations import (
+    _strip_midnight_timestamps, add_source, modify_dimensions, save_chart,
+)
 
 
 @pytest.fixture
@@ -116,3 +118,30 @@ def test_modify_dimensions_sets_width_height(line_chart):
 def test_modify_dimensions_falsy_leaves_unset(line_chart):
     spec = json.loads(modify_dimensions(line_chart, 0, 0))
     assert "width" not in spec and "height" not in spec
+
+
+# ---------------------------------------------------------------- timestamp stripping
+@pytest.mark.parametrize("raw,expected", [
+    ('"2020-01-01T00:00:00"', '"2020-01-01"'),
+    ('"2020-01-01T00:00:00.000Z"', '"2020-01-01"'),
+    ('"2020-01-01T12:30:00"', '"2020-01-01T12:30:00"'),   # non-midnight preserved
+])
+def test_strip_midnight_timestamps(raw, expected):
+    assert _strip_midnight_timestamps(raw) == expected
+
+
+def _dated_chart():
+    df = pd.DataFrame({"date": pd.to_datetime(["2020-01-01", "2020-02-01"]), "v": [1, 2]})
+    return alt.Chart(df).mark_line().encode(x="date:T", y="v:Q")
+
+
+def test_save_chart_strips_midnight_timestamps(tmp_path):
+    save_chart(_dated_chart(), str(tmp_path), "c", width=100, height=80)
+    text = (tmp_path / "c.json").read_text()
+    assert "T00:00:00" not in text
+    assert "2020-01-01" in text
+
+
+def test_save_chart_can_keep_timestamps(tmp_path):
+    save_chart(_dated_chart(), str(tmp_path), "c", width=100, height=80, strip_timestamps=False)
+    assert "T00:00:00" in (tmp_path / "c.json").read_text()
