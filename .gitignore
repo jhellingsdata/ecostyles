@@ -1,5 +1,6 @@
 # Python virtual environments
 venv/
+.venv/
 env/
 .env/
 
@@ -26,9 +27,14 @@ build/
 htmlcov/
 .nox/
 
+# Generated theme contact sheets (see scripts/render_themes.py)
+renders/
+
 # Jupyter Notebook
 .ipynb_checkpoints
+# Ignore scratch notebooks everywhere, but keep curated ones under notebooks/
 *.ipynb
+!notebooks/**/*.ipynb
 
 # OS specific
 .DS_Store

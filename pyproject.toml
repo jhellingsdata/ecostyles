@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -16,17 +16,22 @@ maintainers = [
 license = {text = "MIT"}
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "altair>=5.5.0",
+    "altair>=6.2.0",
     "pandas>=1.1.3",
     "vl-convert-python>=1.7.0",
-    "country-converter>=1.0.0",
-    "importlib-resources>=6.4.0"
+    "country-converter>=1.0.0"
 ]
-requires-python = ">=3.9"
+# Altair 6.2+ requires Python >= 3.10, so that is our floor. (Python 3.9 is end-of-life.)
+requires-python = ">=3.10"
 
 [project.urls]
 Homepage = "https://github.com/jhellingsdata/ecostyles"
@@ -37,7 +42,34 @@ test = [
     "pytest>=6.0.0",
     "pytest-cov>=3.0.0"
 ]
+dev = [
+    "ipykernel>=6.0.0",       # run notebooks in notebooks/ against the project venv
+    "nox>=2024.0.0",          # local multi-Python test runner (see noxfile.py)
+    "bump-my-version>=0.28.0" # cut releases (see RELEASING.md)
+]
 
-# pyproject.toml  (setuptools ≥ 61)
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Ship bundled data (fonts + reference datasets) inside the wheel.
 [tool.setuptools.package-data]
-"ecostyles.data.fonts" = ["**/*.ttf", "**/*.otf"]
+ecostyles = ["data/**/*.otf", "data/**/*.ttf", "data/**/*.json", "data/**/*.csv"]
+
+# Version bumping — `uv run bump-my-version bump {patch|minor|major}`.
+# This edits the version below, commits, and creates a `v{new}` tag; pushing the
+# tag triggers the Release workflow. See RELEASING.md.
+[tool.bumpversion]
+current_version = "0.1.2"
+allow_dirty = false
+commit = true
+tag = true
+tag_name = "v{new_version}"
+message = "Release v{new_version}"
+
+# Update the single source-of-truth version in [project]. The regex is anchored to the
+# start of a line so it matches `version = "..."` but not `current_version = "..."`.
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+regex = true
+search = '^version = "{current_version}"'
+replace = 'version = "{new_version}"'

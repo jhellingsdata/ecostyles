@@ -1,6 +1,10 @@
 import nox
 
-@nox.session(venv_backend="conda", python=["3.9", "3.10", "3.11"])
+# Use uv to create the per-version virtualenvs (fast, and matches our dev workflow).
+nox.options.default_venv_backend = "uv"
+
+
+@nox.session(python=["3.10", "3.11", "3.12", "3.13", "3.14"])
 def test(session):
-    session.install(".[test]")      # install our package and test requirements
+    session.install("-e", ".[test]")
     session.run("pytest", "-q")

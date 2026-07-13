@@ -1,9 +1,9 @@
-"""Article chart theme configuration."""
+"""Newsletter chart theme configuration."""
 
 from altair import theme
 def get_theme() -> theme.ThemeConfig:
-    """Returns a theme suitable for Economics Observatory article charts.
-    
+    """Returns a theme suitable for Economics Observatory newsletter charts.
+
     Returns:
         dict: Theme configuration
     """
@@ -34,7 +34,7 @@ def get_theme() -> theme.ThemeConfig:
                 'discreteHeight': 300,
             },
             "range": {
-                "category": ["#36B7B4", "#E6224B", "#F4C245", "#0063AF", "#00A767", "#179FDB", "#EB5C2E"],
+                "category": ["#36B7B4", "#E6224B", "#F4C245", "#0063AF", "#00A767", "#179FDB", "#EB5C2E", "#5C267B", "#122B39"],
                 "diverging": ["#E6224B", "#E54753", "#C9C9C9", "#179FDB", "#122B39"],
                 "heatmap": ["#C9C9C9", "#179FDB", "#0063AF", "#122B39"],
                 "ordinal": ["#00A767", "#36B7B4", "#179FDB", "#0063AF", "#243B5A"]
