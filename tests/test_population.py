@@ -1,7 +1,8 @@
 """Unit tests for ecostyles.utils.population.
 
-Network is mocked out (``_fetch_one`` is patched), so these run offline and deterministically.
-The live World Bank path is exercised manually during development.
+Both the bundled snapshot (``_load_bundled``) and the network (``_fetch_one``) are mocked,
+so these run offline and deterministically. The live World Bank path and the real bundled
+data are exercised separately during development / via scripts/fetch_population.py.
 """
 
 import pandas as pd
@@ -9,8 +10,8 @@ import pytest
 
 import ecostyles.utils.population as pop
 
-# Canned "World Bank" values keyed by (iso3, year).
-FAKE = {
+# Stand-in for the bundled snapshot, and its latest covered year.
+BUNDLED = {
     ("GBR", 2023): 68_526_000,
     ("FRA", 2023): 68_372_286,
     ("GBR", 2000): 58_900_000,
@@ -18,19 +19,24 @@ FAKE = {
     ("USA", 2020): 331_500_000,
     ("DEU", 2022): 83_177_813,
 }
+BUNDLED_MAX_YEAR = 2023
 
-
-def _fake_fetch(iso3, year, timeout):
-    value = FAKE.get((iso3, year))
-    return {(iso3, year): value} if value is not None else {}
+# Values only available from the live API (years newer than the bundle).
+FETCHABLE = {("GBR", 2026): 69_500_000}
 
 
 @pytest.fixture(autouse=True)
-def no_network(monkeypatch):
-    monkeypatch.setattr(pop, "_fetch_one", _fake_fetch)
+def offline(monkeypatch):
+    monkeypatch.setattr(pop, "_load_bundled", lambda: (dict(BUNDLED), BUNDLED_MAX_YEAR))
+
+    def fake_fetch(iso3, year, timeout):
+        value = FETCHABLE.get((iso3, year))
+        return {(iso3, year): value} if value is not None else {}
+
+    monkeypatch.setattr(pop, "_fetch_one", fake_fetch)
 
 
-# ------------------------------------------------------------------- happy paths
+# ------------------------------------------------------------ bundled (offline) paths
 def test_single_year_iso3():
     df = pd.DataFrame({"country": ["GBR", "FRA"], "m": [1, 2]})
     out = pop.add_population(df, "country", year=2023)
@@ -55,6 +61,20 @@ def test_custom_population_column_name():
     assert "pop_total" in out.columns
 
 
+# --------------------------------------------------------------- fallback to live API
+def test_year_beyond_bundle_falls_back_to_api():
+    # 2026 > BUNDLED_MAX_YEAR, so it comes from the (mocked) live API.
+    out = pop.add_population(pd.DataFrame({"country": ["GBR"]}), "country", year=2026)
+    assert out["population"].iloc[0] == 69_500_000
+
+
+def test_allow_fetch_false_stays_offline():
+    with pytest.warns(UserWarning):
+        out = pop.add_population(pd.DataFrame({"country": ["GBR"]}), "country",
+                                year=2026, allow_fetch=False)
+    assert pd.isna(out["population"].iloc[0])  # newer year not fetched -> NaN
+
+
 # --------------------------------------------------------------- missing / errors
 def test_unknown_country_gives_nan_and_warns():
     df = pd.DataFrame({"country": ["GBR", "Atlantis"]})
@@ -64,8 +84,8 @@ def test_unknown_country_gives_nan_and_warns():
     assert pd.isna(out["population"].iloc[1])
 
 
-def test_year_not_available_gives_nan():
-    # 1990 isn't in FAKE, so the fetch returns nothing.
+def test_year_within_bundle_but_missing_gives_nan():
+    # 1990 <= max year but not in the bundle -> NaN (no pointless API call).
     with pytest.warns(UserWarning):
         out = pop.add_population(pd.DataFrame({"country": ["GBR"]}), "country", year=1990)
     assert pd.isna(out["population"].iloc[0])
@@ -91,9 +111,9 @@ def test_missing_columns_raise_keyerror():
 def test_parse_worldbank_payload_extracts_rows():
     payload = [
         {"page": 1, "pages": 1},
-        [{"countryiso3code": "GBR", "date": "2023", "value": 68_526_000}],
+        [{"countryiso3code": "GBR", "date": "2026", "value": 69_500_000}],
     ]
-    assert pop._parse_worldbank_payload(payload) == {("GBR", 2023): 68_526_000}
+    assert pop._parse_worldbank_payload(payload) == {("GBR", 2026): 69_500_000}
 
 
 @pytest.mark.parametrize("payload", [

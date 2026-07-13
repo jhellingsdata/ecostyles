@@ -53,7 +53,7 @@ where = ["src"]
 
 # Ship bundled data (fonts + reference datasets) inside the wheel.
 [tool.setuptools.package-data]
-ecostyles = ["data/**/*.otf", "data/**/*.ttf", "data/**/*.json"]
+ecostyles = ["data/**/*.otf", "data/**/*.ttf", "data/**/*.json", "data/**/*.csv"]
 
 # Version bumping — `uv run bump-my-version bump {patch|minor|major}`.
 # This edits the version below, commits, and creates a `v{new}` tag; pushing the
