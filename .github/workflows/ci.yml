@@ -28,9 +28,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
 
-      - name: Install the package with test dependencies
-        run: uv pip install --system -e ".[test]"
+      - name: Create venv and install the package with test dependencies
+        run: |
+          uv venv
+          uv pip install -e ".[test]"
 
       - name: Run tests
-        run: pytest -q
+        run: uv run --no-sync pytest -q
