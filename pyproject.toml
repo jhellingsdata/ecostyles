@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -20,11 +20,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "altair>=5.5.0",
+    "altair>=6.2.0",
     "pandas>=1.1.3",
     "vl-convert-python>=1.7.0",
     "country-converter>=1.0.0",
-    "importlib-resources>=6.4.0"
+    "importlib-resources>=6.4.0; python_version < '3.10'"
 ]
 requires-python = ">=3.9"
 
@@ -37,7 +37,14 @@ test = [
     "pytest>=6.0.0",
     "pytest-cov>=3.0.0"
 ]
+dev = [
+    "ipykernel>=6.0.0",   # run notebooks in notebooks/ against the project venv
+    "nox>=2024.0.0"       # local multi-Python test runner (see noxfile.py)
+]
 
-# pyproject.toml  (setuptools ≥ 61)
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Ship bundled data (fonts + reference datasets) inside the wheel.
 [tool.setuptools.package-data]
-"ecostyles.data.fonts" = ["**/*.ttf", "**/*.otf"]
+ecostyles = ["data/**/*.otf", "data/**/*.ttf", "data/**/*.json"]
