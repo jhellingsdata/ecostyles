@@ -46,6 +46,19 @@ styles.save(chart, "path/to/save", "chart_name")       # or styles.save(chart, n
 - vl-convert-python >= 1.7.0
 - country-converter >= 1.0.0
 
+## Development
+
+```bash
+uv venv
+uv pip install -e ".[dev,test]"
+uv run pytest
+```
+
+- **Previewing & refining themes** (side-by-side comparison, iteration diffs, live server):
+  see [docs/theming.md](docs/theming.md).
+- **Cutting a release** (versioning + PyPI publish): see [RELEASING.md](RELEASING.md).
+- **Roadmap & backlog**: see [ROADMAP.md](ROADMAP.md).
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
