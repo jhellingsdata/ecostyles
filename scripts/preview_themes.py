@@ -36,7 +36,8 @@ import vl_convert as vlc
 
 ROOT = Path(__file__).resolve().parent.parent
 SPECS = ROOT / "specs"
-THEMES = ["article", "cotd", "newsletter"]
+# THEMES = ["article", "cotd", "newsletter"]
+THEMES = ["article", "cotd"]
 
 sys.path.insert(0, str(SPECS))
 from ecostyles import EcoStyles  # noqa: E402  (registers the bundled fonts)
@@ -151,22 +152,46 @@ def write_file(html: str, open_browser: bool) -> Path:
     return out
 
 
+def _sources_mtime(themes: list[str]) -> float:
+    """Latest mtime across the files a render depends on (themes + gallery specs)."""
+    paths = [ROOT / f"src/ecostyles/themes/{t}.py" for t in themes]
+    paths.append(SPECS / "gallery.py")
+    paths += list((SPECS / "gallery").glob("*.json"))
+    return max((p.stat().st_mtime for p in paths if p.exists()), default=0.0)
+
+
 def serve(args, port: int) -> None:
+    # Cache the rendered page; only re-render when a source file changes. This makes plain
+    # refreshes instant and shrinks the window in which a mid-render refresh drops the
+    # connection (the cause of BrokenPipeError).
+    cache: dict = {"mtime": -1.0, "html": b""}
+
+    def current_html() -> bytes:
+        mtime = _sources_mtime(args.themes)
+        if mtime != cache["mtime"]:
+            variants = build_variants(args.themes, args.dark, args.compare_ref)
+            cache["html"] = build_html(variants, load_charts(), args.scale).encode()
+            cache["mtime"] = mtime
+        return cache["html"]
+
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
-            # Rebuild everything each request so theme/spec edits show on refresh.
-            variants = build_variants(args.themes, args.dark, args.compare_ref)
-            html = build_html(variants, load_charts(), args.scale).encode()
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.end_headers()
-            self.wfile.write(html)
+            try:
+                body = current_html()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            except (BrokenPipeError, ConnectionResetError):
+                pass  # browser refreshed / navigated away mid-response — safe to ignore
 
         def log_message(self, *_):  # quiet
             pass
 
     url = f"http://localhost:{port}/"
-    print(f"Serving theme preview at {url} (edit a theme, refresh to re-render; Ctrl+C to stop)")
+    print(f"Serving theme preview at {url} — edit a theme and refresh "
+          f"(re-renders only when a source file changes; Ctrl+C to stop).")
     webbrowser.open(url)
     HTTPServer(("localhost", port), Handler).serve_forever()
 
@@ -174,7 +199,7 @@ def serve(args, port: int) -> None:
 def main(argv: list[str]) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("themes", nargs="*", default=THEMES, help=f"themes to preview (default: {THEMES})")
-    parser.add_argument("--dark", action="store_true", help="also render cotd dark mode")
+    parser.add_argument("--dark", action="store_false", help="also render cotd dark mode")
     parser.add_argument("--compare-ref", metavar="REF",
                         help="add a column per theme showing it as of this git ref (e.g. HEAD, main, v0.2.0)")
     parser.add_argument("--scale", type=float, default=2.0, help="render scale (default 2)")
